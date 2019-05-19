@@ -129,7 +129,7 @@ if __name__ == '__main__':
         # Test
         for i in range(samples.size):
             o = network.propagate_forward( samples['input'][i] )
-            print(o)
+            #print(o)
             #print (i, samples['input'][i], '%.2f' % o[0],'(expected %.2f)' % samples['output'][i])
             #print (i, '%.2f' % o[0],'(expected %.2f)' % samples['output'][i])
             #print ("")
@@ -142,26 +142,38 @@ if __name__ == '__main__':
     #Proyecto 
     # -------------------------------------------------------------------------
     data = pd.read_csv("Absenteeism_at_work.csv")
-    #data = pd.read_csv("Wea.csv")
-    #df = pd.read_csv("Absenteeism_at_work.csv", usecols = lambda column : column not in ["Age"])
-    #print(data.keys())
-    #del data['Age']
     targetData = np.array(data[["Absenteeism time in hours"]])
-    #print(np.array(targetData)[0])
+
+
+    X = data.values[:,0:20] # LR
+    y = data.values[:,20] # LR
+
     data = data.drop('Absenteeism time in hours',axis=1)
+    data = data.replace(0,np.NaN) # LR
+    data.fillna(data.mean(), inplace=True) # LR
+    
+    print(X) # LR
+    print(y) # LR
+
+
+    lr = LogisticRegression(penalty='l1',dual=False,max_iter=110) # LR
+    lr.fit(X,y) # LR
+    print(lr.score(X,y)) # LR
+
+
+    #print(data.isnull().sum())
     #del data.index.name
     #print(data.get_values()[0])
     tam = len(data.get_values())
 
     samples = np.zeros(tam, dtype=[('input',  float, 20), ('output', float, 1)])
-    #print (tam)
     network.reset()
     for i in range(0, tam):
         #print(data.get_values()[i])
         samples[i][0] = data.get_values()[i]
         samples[i][1] = targetData[i]
 
-    #print(samples[736])
+
     learn(network, samples)
 
 
