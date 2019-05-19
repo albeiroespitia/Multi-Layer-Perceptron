@@ -11,6 +11,12 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
+import time
+from sklearn.model_selection import train_test_split
+
 
 
 
@@ -152,14 +158,43 @@ if __name__ == '__main__':
     data = data.replace(0,np.NaN) # LR
     data.fillna(data.mean(), inplace=True) # LR
     
-    print(X) # LR
-    print(y) # LR
+    #print(X) # LR
+    #print(y) # LR
 
 
-    lr = LogisticRegression(penalty='l1',dual=False,max_iter=110) # LR
-    lr.fit(X,y) # LR
-    print(lr.score(X,y)) # LR
+    #lr = LogisticRegression(penalty='l1',dual=False,max_iter=110) # LR
+    #lr.fit(X,y) # LR
+    #print(lr.score(X,y)) # LR
+    
+    #kfold = KFold(n_splits=3, random_state=7)
+    #result = cross_val_score(lr, X, y, cv=kfold, scoring='accuracy')
+    #print(result.mean())
+     
+    dual=[False]
+    max_iter=[1000,2000,3500,4000,4500,5000]
+    #max_iter=[5000,7000,10000,12000,15000]
+    C = [0.1,0.01,0.001,0.0001]
+    tol = [0.0000001,0.00001,0.001, 0.01, 0.1, 1]
+    l1_ratio = [0.01, 0.1, 0.0001, 0.00001]
+    alpha = [0.1,0.01,0.001,0.0001]
+    penalty = ["elasticnet","l1","l2"]
+    loss = ["squared_hinge","hinge","log","modified_huber","perceptron"]
+    shuffle = [True,False]
+    param_grid = dict(dual=dual,max_iter=[700],C=[0.01],tol=[0.00001],fit_intercept=[False],warm_start=[False])
 
+    lr = LogisticRegression(penalty='l2',solver="lbfgs",multi_class='multinomial',class_weight=None,random_state=10)
+    grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 4, n_jobs=-1)
+
+    #print(grid.get_params().keys())
+
+    #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    #X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.99, random_state=1)
+    #X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, train_size=0.2, random_state=1)
+    start_time = time.time()
+    grid_result = grid.fit(X, y)
+    # Summarize results
+    print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+    print("Execution time: " + str((time.time() - start_time)) + ' ms')
 
     #print(data.isnull().sum())
     #del data.index.name
