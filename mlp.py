@@ -10,11 +10,15 @@
 # -----------------------------------------------------------------------------
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
+
 
 
 def sigmoid(x):
     ''' Sigmoid like function using tanh '''
+    #print(np.tanh(x))
     return np.tanh(x)
+    #return x
 
 def dsigmoid(x):
     ''' Derivative of sigmoid above '''
@@ -33,9 +37,11 @@ class MLP:
         self.layers = []
         # Input layer (+1 unit for bias)
         self.layers.append(np.ones(self.shape[0]+1))
+
         # Hidden layer(s) + output layer
         for i in range(1,n):
             self.layers.append(np.ones(self.shape[i]))
+
 
         # Build weights matrix (randomly between -0.25 and +0.25)
         self.weights = []
@@ -43,11 +49,15 @@ class MLP:
             self.weights.append(np.zeros((self.layers[i].size,
                                          self.layers[i+1].size)))
 
+
+
         # dw will hold last change in weights (for momentum)
         self.dw = [0,]*len(self.weights)
 
+
         # Reset weights
         self.reset()
+        #print(self.weights)
 
     def reset(self):
         ''' Reset weights '''
@@ -55,19 +65,26 @@ class MLP:
         for i in range(len(self.weights)):
             Z = np.random.random((self.layers[i].size,self.layers[i+1].size))
             self.weights[i][...] = (2*Z-1)*0.25
+            #print((2*Z-1)*0.25)
 
     def propagate_forward(self, data):
         ''' Propagate data from input layer to output layer. '''
 
         # Set input layer
         self.layers[0][0:-1] = data
+        #print(data)
 
         # Propagate from layer 0 to layer n-1 using sigmoid as activation function
+        #print(len(self.shape))
         for i in range(1,len(self.shape)):
             # Propagate activity
+            #print("layers",self.layers[i-1])
+            #print("weights",self.weights[i-1])
             self.layers[i][...] = sigmoid(np.dot(self.layers[i-1],self.weights[i-1]))
 
+
         # Return output
+        #print(self.layers[-1])
         return self.layers[-1]
 
 
@@ -112,11 +129,13 @@ if __name__ == '__main__':
         # Test
         for i in range(samples.size):
             o = network.propagate_forward( samples['input'][i] )
-            print (i, samples['input'][i], '%.2f' % o[0],'(expected %.2f)' % samples['output'][i])
+            print(o)
+            #print (i, samples['input'][i], '%.2f' % o[0],'(expected %.2f)' % samples['output'][i])
+            #print (i, '%.2f' % o[0],'(expected %.2f)' % samples['output'][i])
+            #print ("")
             
-        print ("")
-
-    network = MLP(2,2,1)
+       
+    network = MLP(20,20,1)
 
 
 
@@ -142,7 +161,12 @@ if __name__ == '__main__':
         samples[i][0] = data.get_values()[i]
         samples[i][1] = targetData[i]
 
-    print(samples[736])
+    #print(samples[736])
+    learn(network, samples)
+
+
+
+
     # Example 1 : OR logical function
     # -------------------------------------------------------------------------
     #print ("Learning the OR logical function")
