@@ -20,6 +20,8 @@ from sklearn.model_selection import train_test_split
 
 
 
+
+
 def sigmoid(x):
     ''' Sigmoid like function using tanh '''
     #print(np.tanh(x))
@@ -154,22 +156,33 @@ if __name__ == '__main__':
     X = data.values[:,0:20] # LR
     y = data.values[:,20] # LR
 
+    #m = np.array(y.size)
+    #for i in range(y.size):
+    #    m[i] = y[i]
+    #print(data.describe())
+    #print (m)
     data = data.drop('Absenteeism time in hours',axis=1)
     data = data.replace(0,np.NaN) # LR
     data.fillna(data.mean(), inplace=True) # LR
+    #print(targetData[0:])
     
     #print(X) # LR
     #print(y) # LR
 
-
-    #lr = LogisticRegression(penalty='l1',dual=False,max_iter=110) # LR
-    #lr.fit(X,y) # LR
-    #print(lr.score(X,y)) # LR
     
+    #lr2 = LogisticRegression(penalty='l1',dual=False,max_iter=110) # LR
+    #param_grid = dict(dual=dual)
+    #grid = GridSearchCV(estimator=lr2, param_grid=param_grid, cv = 4, n_jobs=-1,scoring="accuracy")
+    #lr2.fit(X,y) # LR
+    #grid_result = grid.fit(X, y)
+    #print(lr2.score(X,y)) # LR
+    #print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+    	
     #kfold = KFold(n_splits=3, random_state=7)
-    #result = cross_val_score(lr, X, y, cv=kfold, scoring='accuracy')
+    #result = cross_val_score(lr2, X, y, cv=kfold, scoring='accuracy')
     #print(result.mean())
      
+
     dual=[False]
     max_iter=[1000,2000,3500,4000,4500,5000]
     #max_iter=[5000,7000,10000,12000,15000]
@@ -180,14 +193,21 @@ if __name__ == '__main__':
     penalty = ["elasticnet","l1","l2"]
     loss = ["squared_hinge","hinge","log","modified_huber","perceptron"]
     shuffle = [True,False]
-    param_grid = dict(dual=dual,max_iter=[700],C=[0.01],tol=[0.00001],fit_intercept=[False],warm_start=[False])
 
-    lr = LogisticRegression(penalty='l2',solver="lbfgs",multi_class='multinomial',class_weight=None,random_state=10)
-    grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 4, n_jobs=-1)
+    #print (np.unique(y))
+    #print(np.split(y,''))
+    #print (y.flatten())
+
+
+    param_grid = dict(dual=dual,max_iter=[700],C=[0.01],tol=[0.00001],fit_intercept=[False],warm_start=[False])
+   
+    lr = LogisticRegression(penalty='l2',solver="lbfgs",multi_class='multinomial',class_weight=None,random_state=1)
+    grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 4, n_jobs=-1,scoring="accuracy")
 
     #print(grid.get_params().keys())
 
     #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    #x_train, x_test, y_train, y_test = train_test_split(X,y,test_size=0.33, random_state=50)
     #X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.99, random_state=1)
     #X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, train_size=0.2, random_state=1)
     start_time = time.time()
