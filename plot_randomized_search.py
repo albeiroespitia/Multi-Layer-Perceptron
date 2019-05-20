@@ -37,9 +37,16 @@ from sklearn.preprocessing import StandardScaler
 
 from sklearn import preprocessing
 
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, r2_score
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
+
+from sklearn.utils.class_weight import compute_class_weight
+
+from sklearn.model_selection import KFold
+
+from sklearn.preprocessing import RobustScaler
+
 
 
 
@@ -66,7 +73,7 @@ y = data.values[:,20] # LR
 #u = digits.target[0:740]
 #y = pd.DataFrame(data[["Absenteeism time in hours"]])
 #print(y)
-#y = y.astype(int)
+y = y.astype(int)
 
 #le = preprocessing.LabelEncoder()
 #y = y.apply(le.fit_transform)
@@ -76,10 +83,12 @@ y = data.values[:,20] # LR
 # build a classifier
 clf = RandomForestClassifier(n_estimators=6)
 #svr_regressor = SVR()
-#wea = MLPClassifier()
+#mlp = MLPClassifier()
 #svc = SVC()
 #lr = LogisticRegression(penalty='l2')
 
+
+#print(np.unique(y[0::,0]))
 
 
 # Utility function to report best scores
@@ -106,19 +115,24 @@ def report(results, n_top=3):
 #              "n_jobs":[-1]}
 
 
-#Random Forest 48%
+#class_weights2 = compute_class_weight('balanced', np.unique(y), y)
+#print(np.unique(y))
+#print(y)
+
+#Random Forest 50%
 param = {"max_depth": [3],
               "max_features": [15,16],
-              "min_samples_split": [13,14],
+              "min_samples_split": [2,4,8,10,13,14],
               "bootstrap": [True, False],
               "criterion": ["entropy"],
-              "class_weight":[
-                                {0:0.9,1:1,2:2,3:1,4:1,8:2.1,40:2},
-                                {0:0.9,1:1,2:2,3:1,4:1,8:2.1,40:1},
-                                {0:0.9,1:1,2:2,3:1,4:1,8:2.1,40:40},
-                                {0:0.9,1:1,2:2,3:1,4:1,8:2.1,40:30}
-                             ],
-              #"class_weight": [None],
+              #"class_weight":[
+              #                  {0:0.9,1:1,2:2,3:1,4:1,5:2,8:2.1,40:2.1},
+              #                  {0:0.9,1:1,2:2,3:1,4:1,5:2,8:2.1,40:2.1},
+              #                  {0:0.9,1:1,2:2,3:1,4:1,5:2,8:2.1,40:2.1},
+              #                  {0:0.9,1:1,2:2,3:1,4:1,5:2,8:2.1,40:2.1}
+              #               ],
+              "class_weight": [None],
+              #"class_weight":[{7:0.2}],
               "min_weight_fraction_leaf":[0.0001],
               "max_leaf_nodes": [10],
               "min_impurity_decrease": [0],
@@ -148,20 +162,32 @@ param = {"max_depth": [3],
 
 
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-#clf.fit(X,y)
+
+# Scaling..
+#scaler = RobustScaler()
+#X = scaler.fit_transform(X)
+
+scaler = StandardScaler()  
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+scaler.fit(X_train)
+X_train = scaler.transform(X_train)  
+X_test = scaler.transform(X_test)
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.fit_transform(X_test)
+
+clf.fit(X_train,y_train)
 #svr_regressor.fit(X,y.ravel())
-#wea.fit(X,y)
+#wea.fit(X_train,y_train)
+
+#rid.fit(X_train,y_train)
 
 
-#scaler = StandardScaler()  
-#scaler.fit(X_train)
-#X_train = scaler.transform(X_train)  
-#X_test = scaler.transform(X_test)
-#sc = StandardScaler()
-#X_train = sc.fit_transform(X_train)
-#X_test = sc.fit_transform(X_test)
 
 #RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
 #            max_depth=3, max_features=[14,15,16], max_leaf_nodes=None,
@@ -170,13 +196,35 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 #            n_estimators=6, n_jobs=2, oob_score=False, random_state=0,
 #            verbose=0, warm_start=False)
 
+cv_method = KFold(n_splits=4, shuffle=True)
 
-grid_search = GridSearchCV(clf, param, n_jobs=-1, cv = 4)
-grid_search.fit(X,y)
+
+grid_search = GridSearchCV(clf, param, n_jobs=-1, cv = cv_method, scoring='accuracy')
+#print(grid_search.get_params())
+grid_search.fit(X_train,y_train)
+y_pred = grid_search.predict(X_test)
+
+print(X_test)
+print(y_pred)
+print(y_test)
+
+
+
+print("Best score: ",grid_search.best_score_)
+print("Accuracy score",accuracy_score(y_test, y_pred))
+
+
+print("CLF: ",clf.score(X_train,y_train))
+print("GRID_SEARCHING: ",grid_search.score(X_train,y_train))
+
+print('R2: ', r2_score(y_pred = grid_search.best_estimator_.predict(X), y_true = y))
+
 
 #grid_search = GridSearchCV(clf,param_grid=param_grid, cv=4, iid=False)
 #print(grid_search.get_params())
 start = time()
+#print(grid_search.best_estimator_)
+#print(grid_search.score(X_test,y_test))
 #grid_search.fit(X, y)
 
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."
