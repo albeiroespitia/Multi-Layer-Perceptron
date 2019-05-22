@@ -245,3 +245,6 @@ if __name__ == '__main__':
     #samples[3] = (1,1), 1
     #learn(network, samples)
 
+
+#Buenas noches profesora, queria comentarle que estaba revisando el articulo y ellos utilizaron un dataset diferente al de nosotros, el de ellos tenian 2243 records, y nosotros solo tenemos 740, y tenian atributos diferentes a nuestro dataset 
+

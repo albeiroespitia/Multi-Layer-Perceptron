@@ -50,12 +50,14 @@ print(Counter(y.values.ravel()))
 print("Valores",np.unique(y))
 #y = y['Absenteeism time in hours'].apply(str)
 for i in range(y.size):
-    if(y.values[i] > 0 and y.values[i] <= 5):
-         y.values[i] = 0
-    elif(y.values[i] > 5 and y.values[i] <= 48):
+    if(y.values[i] == 0):
+        y.values[i] = 0
+    elif(y.values[i] > 0 and y.values[i] <= 16):
          y.values[i] = 1
-    elif(y.values[i] > 48 and y.values[i] <= 120):
+    elif(y.values[i] > 16 and y.values[i] <= 56):
          y.values[i] = 2
+    elif(y.values[i] > 56 and y.values[i] <= 120):
+         y.values[i] = 3
 
 print("Valores",np.unique(y))
 
