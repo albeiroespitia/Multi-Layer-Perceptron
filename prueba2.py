@@ -60,7 +60,7 @@ print("Valores",np.unique(y))
 #y = y.apply(le.fit_transform)
 
 
-X_train, X_test, y_train, y_test = train_test_split(X, y.values.ravel(), test_size = 0.30,random_state=19)
+X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size = 0.30,random_state=19)
 
 scaler = StandardScaler()
 scaler.fit(X_train)
@@ -104,6 +104,6 @@ start = time()
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."% (time() - start, len(grid_search.cv_results_['params'])))
 report(grid_search.cv_results_)
 
-skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=False)
+skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True, labels=['Ausencia Nula','Horas','Dias','Meses'])
 plt.show()
 
