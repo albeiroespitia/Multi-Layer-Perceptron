@@ -23,8 +23,6 @@ def report(results, n_top=3):
             print("Parameters: {0}".format(results['params'][candidate]))
             print("")
 
-
-
 namesColumn = ["ID", "Reason for absence","Month of absence", "Day of the week", "Seasons", "Transportation expense", "Distance from Residence to Work", "Service time", "Age", "Work load Average/day ", "Hit target", "Disciplinary failure", "Education", "Son", "Social drinker", "Social smoker", "Pet", "Weight","Height","Body mass index","Absenteeism time in hours"]
 
 
@@ -64,7 +62,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size = 0.30,
 
 scaler = StandardScaler()
 scaler.fit(X_train)
-X_train = scaler.transform(X_train)  
+X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
 
 clf = MLPClassifier()
@@ -104,6 +102,12 @@ start = time()
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."% (time() - start, len(grid_search.cv_results_['params'])))
 report(grid_search.cv_results_)
 
-skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True, labels=['Ausencia Nula','Horas','Dias','Meses'])
-plt.show()
+#skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True, labels=['Ausencia Nula','Horas','Dias','Meses'])
+#plt.plot(X["Age"].tolist(), y.values.tolist())
+#print(X["Age"].tolist())
+#print(y.values.ravel().tolist())
+#plt.show()
 
+#import pandas_profiling
+#report = pandas_profiling.ProfileReport(dataframe)
+#report.to_file("report.html")
