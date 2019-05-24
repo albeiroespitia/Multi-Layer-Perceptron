@@ -42,13 +42,13 @@ for i in range(y.size):
         labels[i] = "Ausencia Nula"
     elif(y.values[i] > 0 and y.values[i] <= 16):
          y.values[i] = 1
-         labels[i] = "Horas"
+         labels[i] = "Pocas horas"
     elif(y.values[i] > 16 and y.values[i] <= 56):
          y.values[i] = 2
-         labels[i] = "Dias"
+         labels[i] = "Muchas horas"
     elif(y.values[i] > 56 and y.values[i] <= 120):
          y.values[i] = 3
-         labels[i] = "Meses"
+         labels[i] = "Exageradas horas"
 
 print("Valores",np.unique(y))
 
@@ -78,11 +78,10 @@ param = {'solver': ['sgd'],
         'learning_rate':['constant'],
         'shuffle': [True],
         'momentum':[0.9],
-        'nesterovs_momentum':[True],
         #'verbose':[1],
-	'power_t':[0.1],
-	'warm_start':[True],
-	'early_stopping':[False],
+		#'power_t':[0.1],
+		#'warm_start':[True],
+		#'early_stopping':[False],
 }
 
 cv_method = KFold(n_splits=6)
