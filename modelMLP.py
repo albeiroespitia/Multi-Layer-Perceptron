@@ -5,14 +5,11 @@ from sklearn.preprocessing import StandardScaler, PowerTransformer
 from sklearn.model_selection import GridSearchCV, KFold, train_test_split
 from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn import preprocessing
-from sklearn.metrics import explained_variance_score, max_error, mean_absolute_error, mean_squared_error, mean_squared_log_error, median_absolute_error, r2_score, classification_report,confusion_matrix, accuracy_score
+from sklearn.metrics import precision_score,explained_variance_score, max_error, mean_absolute_error, mean_squared_error, mean_squared_log_error, median_absolute_error, r2_score, classification_report,confusion_matrix, accuracy_score
 import scikitplot as skplt
 import matplotlib.pyplot as plt
 from collections import Counter
 from yellowbrick.model_selection import CVScores
-
-
-
 
 def report(results, n_top=3):
     for i in range(1, n_top + 1):
@@ -26,8 +23,6 @@ def report(results, n_top=3):
             print("")
 
 namesColumn = ["ID", "Reason for absence","Month of absence", "Day of the week", "Seasons", "Transportation expense", "Distance from Residence to Work", "Service time", "Age", "Work load Average/day ", "Hit target", "Disciplinary failure", "Education", "Son", "Social drinker", "Social smoker", "Pet", "Weight","Height","Body mass index","Absenteeism time in hours"]
-
-
 dataframe = pd.read_csv('Absenteeism_at_work.csv', names=namesColumn, sep=",",header=0)
 
 X = dataframe.iloc[:, 0:20]
@@ -53,12 +48,8 @@ for i in range(y.size):
          labels[i] = "Exageradas horas"
 
 print("Valores",np.unique(y))
-
-#print(y.to_string())
-
 #le = preprocessing.LabelEncoder()
 #y = y.apply(le.fit_transform)
-
 
 X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size = 0.30,random_state=19)
 
@@ -92,10 +83,8 @@ grid_search = GridSearchCV(clf, param_grid=param, n_jobs=-1, cv = cv_method, sco
 grid_search.fit(X_train,y_train)
 y_pred = grid_search.predict(X_test)
 
-cm = confusion_matrix(y_test, y_pred)
-print("confusion_matrix:")
-print(cm)
-print(classification_report(y_test,y_pred))
+#print(confusion_matrix(y_test, y_pred))
+#print(classification_report(y_test,y_pred))
 
 print("Score: ",grid_search.best_score_)
 
@@ -104,13 +93,16 @@ print("GridSearchCV took %.2f seconds for %d candidate parameter settings."% (ti
 report(grid_search.cv_results_)
 classes = ["Ausencia Nula","Pocas horas","Muchas horas","Exageradas horas"]
 
+#skplt.metrics.plot_precision_recall_curve(y_test, y_pred)
+#plt.plot(clf.loss_)
+#snp.labs("number of steps", "loss function", "Loss During GD (Rate=0.001)")
 
 
-
+#X_test[:,0]
 
 
 #Graficas realizadas
-#Confusion matrix
+#Confusion matrix plot
 #skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True)
 
 #Cross validation plot
@@ -118,8 +110,10 @@ classes = ["Ausencia Nula","Pocas horas","Muchas horas","Exageradas horas"]
 #oz.fit(X_train, y_train)
 #oz.poof()
 
+#Learning rate plot
+#skplt.estimators.plot_learning_curve(grid_search.best_estimator_, X_train, y_train, cv=cv_method)
+
 ########################################################
 
 # No realizadas aun
-#skplt.estimators.plot_learning_curve(grid_search, np.array(y_test).shape, y_pred)
 plt.show()
