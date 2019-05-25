@@ -9,8 +9,6 @@ from sklearn.metrics import explained_variance_score, max_error, mean_absolute_e
 import scikitplot as skplt
 import matplotlib.pyplot as plt
 from collections import Counter
-from yellowbrick.model_selection import CVScores
-
 
 
 
@@ -42,13 +40,13 @@ for i in range(y.size):
     if(y.values[i] == 0):
         y.values[i] = 0
         labels[i] = "Ausencia Nula"
-    elif(y.values[i] > 0 and y.values[i] <= 40):
+    elif(y.values[i] > 0 and y.values[i] <= 16):
          y.values[i] = 1
-         labels[i] = "Pocas horas"
-    elif(y.values[i] > 40 and y.values[i] <= 80):
+         labels[i] = "Pocas Horas"
+    elif(y.values[i] > 16 and y.values[i] <= 56):
          y.values[i] = 2
          labels[i] = "Muchas horas"
-    elif(y.values[i] > 80 and y.values[i] <= 120):
+    elif(y.values[i] > 56 and y.values[i] <= 120):
          y.values[i] = 3
          labels[i] = "Exageradas horas"
 
@@ -102,24 +100,6 @@ print("Score: ",grid_search.best_score_)
 start = time()
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."% (time() - start, len(grid_search.cv_results_['params'])))
 report(grid_search.cv_results_)
-classes = ["Ausencia Nula","Pocas horas","Muchas horas","Exageradas horas"]
 
-
-
-
-
-
-#Graficas realizadas
-#Confusion matrix
-#skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True)
-
-#Cross validation plot
-#oz = CVScores(grid_search.best_estimator_, cv=cv_method)
-#oz.fit(X_train, y_train)
-#oz.poof()
-
-########################################################
-
-# No realizadas aun
-#skplt.estimators.plot_learning_curve(grid_search, np.array(y_test).shape, y_pred)
+skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True, labels=['Ausencia Nula','Pocas Horas','Muchas horas','Exageradas Horas'])
 plt.show()
