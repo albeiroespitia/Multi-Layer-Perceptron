@@ -3,9 +3,9 @@ from time import time
 import numpy as np
 from sklearn.preprocessing import StandardScaler, PowerTransformer
 from sklearn.model_selection import GridSearchCV, KFold, train_test_split
-from sklearn.neural_network import MLPRegressor, MLPClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn import preprocessing
-from sklearn.metrics import precision_score,explained_variance_score, max_error, mean_absolute_error, mean_squared_error, mean_squared_log_error, median_absolute_error, r2_score, classification_report,confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report,confusion_matrix, accuracy_score, hamming_loss
 import scikitplot as skplt
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -16,7 +16,7 @@ def report(results, n_top=3):
         candidates = np.flatnonzero(results['rank_test_score'] == i)
         for candidate in candidates:
             print("Modelo con rank: {0}".format(i))
-            print("Precision de validacio promedio: {0:.3f} (std: {1:.3f})".format(
+            print("Precision de validacion promedio: {0:.3f} (std: {1:.3f})".format(
                   results['mean_test_score'][candidate],
                   results['std_test_score'][candidate]))
             print("Parametros: {0}".format(results['params'][candidate]))
@@ -59,9 +59,6 @@ X_test = scaler.transform(X_test)
 
 clf = MLPClassifier()
 
-#clf.fit(X_train,y_train)
-#print("el loss: ",clf.loss_)
-
 param = {'solver': ['sgd'],
 		'activation' : ['tanh','relu'],
         'max_iter': [200],
@@ -85,10 +82,11 @@ grid_search = GridSearchCV(clf, param_grid=param, n_jobs=-1, cv = cv_method, sco
 grid_search.fit(X_train,y_train)
 y_pred = grid_search.predict(X_test)
 
+
+
 #print(confusion_matrix(y_test, y_pred))
 print(classification_report(y_test,y_pred))
 
-print("Score: ",grid_search.best_score_)
 
 start = time()
 print("GridSearchCV duro %.2f segundos para %d configuracion de parametros candidatos."% (time() - start, len(grid_search.cv_results_['params'])))
