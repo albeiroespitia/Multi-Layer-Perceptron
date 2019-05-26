@@ -15,11 +15,11 @@ def report(results, n_top=3):
     for i in range(1, n_top + 1):
         candidates = np.flatnonzero(results['rank_test_score'] == i)
         for candidate in candidates:
-            print("Model with rank: {0}".format(i))
-            print("Mean validation score: {0:.3f} (std: {1:.3f})".format(
+            print("Modelo con rank: {0}".format(i))
+            print("Precision de validacio promedio: {0:.3f} (std: {1:.3f})".format(
                   results['mean_test_score'][candidate],
                   results['std_test_score'][candidate]))
-            print("Parameters: {0}".format(results['params'][candidate]))
+            print("Parametros: {0}".format(results['params'][candidate]))
             print("")
 
 namesColumn = ["ID", "Reason for absence","Month of absence", "Day of the week", "Seasons", "Transportation expense", "Distance from Residence to Work", "Service time", "Age", "Work load Average/day ", "Hit target", "Disciplinary failure", "Education", "Son", "Social drinker", "Social smoker", "Pet", "Weight","Height","Body mass index","Absenteeism time in hours"]
@@ -33,19 +33,18 @@ print("Valores",np.unique(y))
 
 labels = ["" for x in range(y.size)]
 
-for i in range(y.size):
-    if(y.values[i] == 0):
-        y.values[i] = 0
-        labels[i] = "Ausencia Nula"
-    elif(y.values[i] > 0 and y.values[i] <= 40):
-         y.values[i] = 1
-         labels[i] = "Pocas horas"
-    elif(y.values[i] > 40 and y.values[i] <= 80):
-         y.values[i] = 2
-         labels[i] = "Muchas horas"
-    elif(y.values[i] > 80 and y.values[i] <= 120):
-         y.values[i] = 3
-         labels[i] = "Exageradas horas"
+for idx,item in enumerate(y.values, start=0):
+    if(item == 0):
+        labels[idx] = "Ausencia Nula"
+    elif(item > 0 and item <= 40):
+        labels[idx] = "Pocas horas"
+    elif(item > 40 and item <= 80):
+        labels[idx] = "Muchas horas"
+    elif(item > 80 and item <= 120):
+        labels[idx] = "Exageradas horas"
+
+
+print("Labels: ",Counter(labels))
 
 print("Valores",np.unique(y))
 #le = preprocessing.LabelEncoder()
@@ -59,6 +58,9 @@ X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
 
 clf = MLPClassifier()
+
+#clf.fit(X_train,y_train)
+#print("el loss: ",clf.loss_)
 
 param = {'solver': ['sgd'],
 		'activation' : ['tanh','relu'],
@@ -84,12 +86,12 @@ grid_search.fit(X_train,y_train)
 y_pred = grid_search.predict(X_test)
 
 #print(confusion_matrix(y_test, y_pred))
-#print(classification_report(y_test,y_pred))
+print(classification_report(y_test,y_pred))
 
 print("Score: ",grid_search.best_score_)
 
 start = time()
-print("GridSearchCV took %.2f seconds for %d candidate parameter settings."% (time() - start, len(grid_search.cv_results_['params'])))
+print("GridSearchCV duro %.2f segundos para %d configuracion de parametros candidatos."% (time() - start, len(grid_search.cv_results_['params'])))
 report(grid_search.cv_results_)
 classes = ["Ausencia Nula","Pocas horas","Muchas horas","Exageradas horas"]
 
@@ -101,8 +103,7 @@ classes = ["Ausencia Nula","Pocas horas","Muchas horas","Exageradas horas"]
 
 #X_test[:,0]
 
-
-#Graficas realizadas
+#Graficas cortas realizadas
 #Confusion matrix plot
 #skplt.metrics.plot_confusion_matrix(y_test, y_pred, normalize=True)
 
